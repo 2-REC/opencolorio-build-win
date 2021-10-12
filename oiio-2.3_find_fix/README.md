@@ -30,7 +30,13 @@ find_library ( OPENIMAGEIO_UTIL_LIBRARY
 ```
 
 
-2. Add the code block adding the "OpenImageIO_Util" library:
+2. After the code block adding the "OpenImageIO" library:
+```
+if (NOT TARGET OpenImageIO::OpenImageIO)
+    ...
+endif()
+```
+Add the code block adding the "OpenImageIO_Util" library:
 ```
 # Starting with OIIO v2.3, some utility classes are now only declared in OpenImageIO_Util
 # (and not in both libraries like in older versions).

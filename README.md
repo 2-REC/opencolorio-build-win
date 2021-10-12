@@ -2,12 +2,12 @@
 
 _"[OpenColorIO](https://opencolorio.org/) (OCIO) is a complete color management solution geared towards motion picture production with an emphasis on visual effects and computer animation. OCIO provides a straightforward and consistent user experience across all supporting applications while allowing for sophisticated back-end configuration options suitable for high-end production usage."_
 
-This repositroy aims at helping build [OpenColorIO](https://github.com/AcademySoftwareFoundation/OpenColorIO) from source in Windows.
+This repositroy aims at helping build [OpenColorIO library](https://github.com/AcademySoftwareFoundation/OpenColorIO) from source in Windows.
 
 Building OCIO can be confusing, as it has a few dependencies, one of them being OpenImageIO (OIIO), which itself depends on OpenColorIO.
 
 
-The build process described here is based on the (OpenColorIO documentation)[https://github.com/AcademySoftwareFoundation/OpenColorIO/blob/master/docs/quick_start/installation.rst#windows-build].
+The build process described here is based on the [OpenColorIO documentation](https://github.com/AcademySoftwareFoundation/OpenColorIO/blob/master/docs/quick_start/installation.rst#windows-build).
 
 The versions of software and library used in the process try to follow the [VFX Reference Platform](https://vfxplatform.com/).
 CY2021 will be used as the annual reference.
