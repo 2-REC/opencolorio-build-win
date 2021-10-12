@@ -7,7 +7,7 @@ set LIB_DIR=OpenColorIO-2.0.2
 set BUILD_TYPE=Release
 set ARCH=x64
 
-REM set OIIO_PATH=%USERPROFILE%/Documents/OCIO/deps/oiio
+set OIIO_PATH=%USERPROFILE%/Documents/OCIO/deps/oiio
 
 set BUILD_APPS=ON
 REM set BUILD_APPS=OFF
@@ -145,6 +145,13 @@ if not "%THIRD_PARTY_PATH%" == "" (
 
 if not "%OIIO_PATH%" == "" (
     set BUILD_OPTIONS=%BUILD_OPTIONS% -DOpenImageIO_ROOT="%OIIO_PATH%/%ARCH%/%BUILD_TYPE%"
+
+    if "%BUILD_TYPE%" == "Debug" (
+        set BUILD_OPTIONS=!BUILD_OPTIONS! -DOIIO_LIBNAME_SUFFIX=_d
+    )
+
+    :: ~hack to force value of "Half" include dir (required by OCIO tools)
+    set BUILD_OPTIONS=!BUILD_OPTIONS! -DHalf_INCLUDE_DIR="%THIRD_PARTY_PATH%/%ARCH%/%BUILD_TYPE%/include"
 )
 
 echo Build options: %BUILD_OPTIONS:\=/%

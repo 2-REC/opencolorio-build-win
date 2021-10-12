@@ -1,6 +1,6 @@
 # Imath/Half
 
-Ths following files need to be modified in order to use the 'Imath' library instead of 'OpenEXR'.
+The following files need to be modified in order to use the 'Imath' library instead of 'OpenEXR'.
 ```
 OpenColorIO
 +---share

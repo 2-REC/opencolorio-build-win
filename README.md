@@ -34,13 +34,13 @@ More information about third part libraries is provided in [THIRD PARTY LIBRARIE
 
 ----
 
-# Libraries
+# Components
 
 ## OpenColorIO
 
 OpenColorIO can be downloaded from its [Github repository](https://github.com/AcademySoftwareFoundation/OpenColorIO).
 
-Version [2.0.2](https://github.com/AcademySoftwareFoundation/OpenColorIO/archive/refs/tags/v2.0.2.zip) is used here.
+Version [2.0.2](https://github.com/AcademySoftwareFoundation/OpenColorIO/releases/tag/v2.0.2) is used here.
 
 Once downloaded, extract the archive to the desired location, and rename the directory to 'OpenColorIO'.
 From this point, the location of the extracted archive (the parent directory) will be referred to as 'OCIO_PATH'.
@@ -346,7 +346,7 @@ Version [3.1.2](https://github.com/AcademySoftwareFoundation/Imath/releases/tag/
 
 Additionally, the following steps are required before doing the build:
 * Modify files referring to Ilmbase module and OpenEXR headers (14 files to modify), as detailed in this [archlinux mingw patch](https://aur.archlinux.org/cgit/aur.git/tree/opencolorio-openexr3.patch?h=mingw-w64-opencolorio-git)
-  => Or look in 'half_fix' (TODO: link)
+  => Or look at "half_fix" directory (TODO: link).
 * If present (for example from a previous build), remove OpenEXR files from third party builds
   * OpenEXR include directory
   * Half library
@@ -363,6 +363,17 @@ By doing so, the library will not be built automatically and conflicts will be a
 
 * Building the Imath library is straightforward and doesn't require anything specific.
 (TODO: could add link/info with build script - link to OIIO? or other?)
+
+
+### Half Include Directory
+
+Using the "Imath" library instead of the "Half" library causes an issue when building the "ociodisplay" and "ociolutimages" tools.
+(TODO: other tools impacted?)
+
+In order to fix this issue, the include directory should be added to the OCIO configuration option, using the "Half_INCLUDE_DIR" option:
+```
+-DHalf_INCLUDE_DIR="%THIRD_PARTY_PATH%/%ARCH%/%BUILD_TYPE%/include"
+```
 
 
 ## OpenImageIO
@@ -391,6 +402,28 @@ Once the OIIO library has been built, the location of the include files and libr
 ```
 where "OIIO_PATH" is the location of the OIIO library and includes.
 (TODO: rephrase)
+
+
+The debug variants of the OIIO libraries by default have a "_d" suffix.
+When building OCIO in debug mode, this suffix should be specified in order for the build process to find the libraries (unless the libraries are renamed and the suffix removed).
+A configuration option is available to specify this suffix:
+```
+-DOIIO_LIBNAME_SUFFIX=_d
+```
+
+
+If using OIIO version 2.3 or higher, linking errors will occur.
+An example of such error is:
+```
+main.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: __cdecl OpenImageIO_v2_3::TypeDesc::TypeDesc(enum OpenImageIO_v2_3::TypeDesc::BASETYPE,enum OpenImageIO_v2_3::TypeDesc::AGGREGATE,enum OpenImageIO_v2_3::TypeDesc::VECSEMANTICS,int)"
+ (__imp_??0TypeDesc@OpenImageIO_v2_3@@QEAA@W4BASETYPE@01@W4AGGREGATE@01@W4VECSEMANTICS@01@H@Z)
+ referenced in function main [OCIO\build\src\apps\ocioconvert\ocioconvert.vcxproj]
+```
+Changes have been done in OIIO, where some functions are now in an additional library "OpenImageIO_Util", which also needs to be linked.
+
+To fix this, changes are required in the way OCIO finds OIIO in "FindOpenImageIO.cmake".
+The changes have been done in more recent of OCIO, so the file can be obtained from a [newer version](https://github.com/AcademySoftwareFoundation/OpenColorIO/blob/master/share/cmake/modules/FindOpenImageIO.cmake) and replace the older one.
+=> Or look at "oiio-2.3_find_fix" directory (TODO: link).
 
 
 ----
