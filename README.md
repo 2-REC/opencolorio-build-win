@@ -9,7 +9,7 @@ Building OCIO can be confusing, as it has a few dependencies, one of them being 
 
 The build process described here is based on the [OpenColorIO documentation](https://github.com/AcademySoftwareFoundation/OpenColorIO/blob/master/docs/quick_start/installation.rst#windows-build).
 
-The versions of software and library used in the process try to follow the [VFX Reference Platform](https://vfxplatform.com/).
+The software and library versions used in the process try to follow the [VFX Reference Platform](https://vfxplatform.com/).
 CY2021 will be used as the annual reference.
 
 The process is thus aimed at version 2.0.x of the OpenColorIO library. Later versions might require changes, but the main process should remain the same.
@@ -75,6 +75,7 @@ Version [3.7.9](https://www.python.org/downloads/release/python-379/) is used he
 
 ### Python Debug Libraries
 
+(TODO: CHECK IF CORRECT - and see if "undef _DEBUG" trick can be applied here)
 There seems to be an issue in debug mode if the Python debug libraries are installed.
 Related [issue](https://github.com/AcademySoftwareFoundation/OpenColorIO/issues/592):
 "When compiling in debug mode, python27_d.lib is expected but that's usually not installed by default, and there is no need to debug Python. The idea is to compile in debug mode but still using the release Python library."
@@ -184,6 +185,7 @@ glew
     glew32s.lib
 ```
 
+
 The path to GLEW needs to be added to the configuration options:
 ```batch
 -DGLEW_ROOT="%GLEW_PATH%"
@@ -233,6 +235,7 @@ The directory will be referred to as 'GLUT_PATH':
 ```batch
 set GLUT_PATH=%OCIO_PATH%\deps\glut
 ```
+
 
 The directory then needs to be referenced in the OCIO build process configuration.
 The location of the include directory is also required here, else the process will not find GLUT (is this a bug?):
@@ -412,7 +415,7 @@ A configuration option is available to specify this suffix:
 ```
 
 
-If using OIIO version 2.3 or higher, linking errors will occur.
+If using OIIO version 2.3 or higher with OCIO version 2.0.x, linking errors will occur.
 An example of such error is:
 ```
 main.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: __cdecl OpenImageIO_v2_3::TypeDesc::TypeDesc(enum OpenImageIO_v2_3::TypeDesc::BASETYPE,enum OpenImageIO_v2_3::TypeDesc::AGGREGATE,enum OpenImageIO_v2_3::TypeDesc::VECSEMANTICS,int)"
