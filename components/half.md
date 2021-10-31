@@ -6,7 +6,7 @@ When building OCIO with OpenImageIO, some errors will occur (for example when bu
 From the [OpenEXR/Imath 2.x to 3.x Porting Guide](https://github.com/AcademySoftwareFoundation/Imath/blob/master/docs/PortingGuide2-3.md):
 _"... with the 2.4 release (of "OpenEXR"), the "IlmBase" libraries are no longer distributed in a form that is readily separable from the rest of OpenEXR."_
 
-To fix the OpenColorIO build, the [Imath library}(https://github.com/AcademySoftwareFoundation/Imath) should be used, instead of relying on OpenEXR.
+To fix the OpenColorIO build, the [Imath library](https://github.com/AcademySoftwareFoundation/Imath) should be used, instead of relying on OpenEXR.
 Version [3.1.2](https://github.com/AcademySoftwareFoundation/Imath/releases/tag/v3.1.2) is used here.
 (TODO: update to 3.1.3)
 

@@ -26,7 +26,7 @@ The software used for the build are the following:
 * Python 3.7.9
 
 Third party libraries used by OCIO can be built during the build process, requiring the following:
-* Git: ("Git for Windows")[https://git-scm.com/download/win] can be used
+* Git: ["Git for Windows"](https://git-scm.com/download/win) can be used
 * Internet access: in order to allow Git to access the libraries source repositories
 
 More information about third part libraries is provided in [THIRD PARTY LIBRARIES](TODO: link).
@@ -281,5 +281,6 @@ TODO:
 
 Alternatively, the provided 'build.bat' file can be used.
 Make sure to previously define the variables if not using default values.
+
 TODO: show how to use .bat
 => set env vars before and call it in same cmd.
