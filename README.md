@@ -29,7 +29,7 @@ Third party libraries used by OCIO can be built during the build process, requir
 * Git: ["Git for Windows"](https://git-scm.com/download/win) can be used
 * Internet access: in order to allow Git to access the libraries source repositories
 
-More information about third part libraries is provided in [THIRD PARTY LIBRARIES](TODO: link).
+More information about third part libraries is provided in [Third Party Libraries](#third-party-libraries).
 
 
 ----
@@ -259,13 +259,14 @@ Some variables need to be set, as well as locations of inputs/outputs:
 * source path
 * python
 * deps
-...
+...  
 (TODO: explain expected paths, etc.)
 
 A build script is provided, but the following can be used as reference or base.
 
 For example, a build script could be:
-TODO: 
+
+(TODO: 
 - adapt to lates changes in "build.bat"
 - convert code to terminal code (not for .bat)
     (to allow to copy paste directly in CMD instead of using .bat file)
@@ -273,6 +274,7 @@ TODO:
 + make 2 parts
   1. without third party libs (full build)
   2. with third party libs (+add option to look for OpenImageIO or not)
+)
 ```batch
 (TODO: add script - "pure" command line, not .BAT)
 ```
