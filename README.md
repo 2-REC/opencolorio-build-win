@@ -73,67 +73,19 @@ set PATH=%PYTHON_PATH%;%PATH%
 Version [3.7.9](https://www.python.org/downloads/release/python-379/) is used here.
 
 
-### Python Debug Libraries
-
-(TODO: CHECK IF CORRECT - and see if "undef _DEBUG" trick can be applied here)
-There seems to be an issue in debug mode if the Python debug libraries are installed.
-Related [issue](https://github.com/AcademySoftwareFoundation/OpenColorIO/issues/592):
-"When compiling in debug mode, python27_d.lib is expected but that's usually not installed by default, and there is no need to debug Python. The idea is to compile in debug mode but still using the release Python library."
-
-
-If Python is installed with the debugging symbols and binaries, the OCIO build process will automatically try to use the debug libraries.
-This can be seen in the link command of 'PyOpenColorIO', where one of the linked item is the Python debug library:
-```
-Link:
-  ... "%PYTHON_PATH%\libs\python37_d.lib" ...
-```
-Even by specifying the use of the non debug library and executable, the process will still use the debug library:
-```batch
--DPython_LIBRARY="%PYTHON_PATH%\libs\python37.lib"
--DPython_EXECUTABLE="%PYTHON_PATH%\python.exe"
-```
-
-This should not be an issue (it actually is the normal behaviour as the build is in debug mode), however the build process will fail with the following error:
-```
-LINK : fatal error LNK1104: cannot open file 'python37.lib' [...\OCIO\build\src\bindings\python\PyOpenColorIO.vcxproj]
-```
-
-Even by specifying the use of the Python debug libraries, the problem remains:
-```batch
--DPython_LIBRARY="%PYTHON_PATH%\libs\python37_d.lib"
--DPython_EXECUTABLE="%PYTHON_PATH%\python_d.exe"
-```
-(TODO: Solve this issue, as currently don't know how to build in debug mode if the Python debug libraries are installed.
-=> Could be related to missing
-<UseDebugLibraries>true</UseDebugLibraries>
-in the generated "build\pybind11_install.vcxproj" and "build\src\bindings\python\PyOpenColorIO.vcxproj"?
-)
-A temporary "fix" (hack) to make the build even if the Python debug libraries are installed (but will be ignored):
-* Run "build.bat"
-  => Configure + build until the error.
-    (Initial fail build is required, if not doing it the VS build will fail)
-* Edit "PyOpenColorIO" project properties in:
-  ...\build\src\bindings\python\PyOpenColorIO.vcxproj
-  In
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    ...
-    <Link>
-      <AdditionalDependencies>C:\Users\2-REC\AppData\Local\Programs\Python\Python37\libs\python37_d.lib;..\..\OpenColorIO\Debug\OpenColorIO_2_0.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
-  Replace "python37_d.lib" by "python37.lib".
-* Open the solution "OpenColorIO.sln" in VS2019
-  * Build the solution (ALL_BUILD)
-    => Build should be OK (19 projects).
-  * Build the install solution (INSTALL)
-    => Binaries+libraries+includes will be copied to "install".
-! - Third party libraries are built in "build/ext/dist". The directory should be copied/saved for later use.
-
-
-
-OCIO can be built without Python by setting the configure option:
+Aternatively, OCIO can be built without Python by setting the configure option:
 ```batch
 -DOCIO_BUILD_PYTHON=0
 ```
 The Python bindings will not be built.
+
+
+### Python Debug Libraries
+
+(TODO: CHECK IF CORRECT)
+There is an issue in debug mode if the Python debug libraries are installed.
+
+More information can be found in ["Python Debug"](components/python_debug).
 
 
 ## GPU Rendering
@@ -142,113 +94,16 @@ OCIO can be compiled with or without GPU rendering options.
 
 For GPU rendering support, GLEW and GLUT are required.
 
-(TODO: find more info/details - impact on libraries?
+(TODO: Add more info/details - impact on libraries?
 No gl:
 => "GPU rendering disabled"
 - ociochecklut.exe
   => different size...
-- OpenColorIOoglapphelpers.lib
+- oglapphelpers.lib
   => not compiled
 )
 
-
-### GLEW
-
-_"The [OpenGL Extension Wrangler Library](http://glew.sourceforge.net/) is a cross-platform open-source C/C++ extension loading library (wrapper)."_
-
-Version 2.1.0 is used here.
-[Windows binaries](https://sourceforge.net/projects/glew/files/glew/2.1.0/glew-2.1.0-win32.zip/download) are available for the latest version, so the build process will be skipped here.
-(TODO: should add the build process for other/later versions - as well as debug configurations)
-
-Once downloaded, extract the archive to '%OCIO_PATH%/deps' and rename the directory to 'glew'.
-The directory will now be referred to as 'GLEW_PATH':
-```batch
-set GLEW_PATH=%OCIO_PATH%\deps\glew
-```
-
-To simplify the configuration options, the files should be reorganised as follows:
-* The 'include' directory kept as is
-* The libraries from the desired configuration moved to the 'lib' directory (for example from the 'lib\Release\x64' directory)
-* The other files can be deleted
-
-The resulting file hierarchy should be:
-```
-glew
-  include
-    GL
-      eglew.h
-      glew.h
-      glxew.h
-      wglew.h
-  lib
-    glew32.lib
-    glew32s.lib
-```
-
-
-The path to GLEW needs to be added to the configuration options:
-```batch
--DGLEW_ROOT="%GLEW_PATH%"
-```
-
-
-### GLUT
-
-_"[freeglut](http://freeglut.sourceforge.net/) is a free-software/open-source alternative to the OpenGL Utility Toolkit (GLUT) library.
-[...] GLUT (and hence freeglut) takes care of all the system-specific chores required for creating windows, initializing OpenGL contexts, and handling input events, to allow for trully portable OpenGL programs."_
-
-[Windows binaries](https://www.transmissionzero.co.uk/software/freeglut-devel/) are available, but not for the latest version.
-It is thus preferable to build the libraries from the latest source.
-
-The stable version [3.2.1](http://prdownloads.sourceforge.net/freeglut/freeglut-3.2.1.tar.gz?download) is used here.
-
-
-A simple build script is provided in [deps/glut](TODO: link).
-The script will build the library in an "install" directory.
-
-The directory should have the following file organisation:
-```
-glut
-  bin
-    freeglut.dll
-  include
-    GL
-      freeglut.h
-      freeglut_ext.h
-      freeglut_std.h
-      freeglut_ucall.h
-      glut.h
-  lib
-    freeglut.lib (or 'freeglutd.lib' for debug)
-    (+other library related files)
-```
-
-Additionally, the (provided) file 'glut.h' needs to be added to the 'include' directory.
-If the file is missing, the following error will occur when building 'oglapphelpers':
-```
-...\src\libutils\oglapphelpers\oglapp.cpp(17,10): fatal error C1083: Cannot open include file: 'GL/glut.h': No such file or directory
- [...\build\src\libutils\oglapphelpers\oglapphelpers.vcxproj]
-```
-
-The directory can be moved to a 'glut' directory in the dependencies location ('%OCIO_PATH%\deps').
-The directory will be referred to as 'GLUT_PATH':
-```batch
-set GLUT_PATH=%OCIO_PATH%\deps\glut
-```
-
-
-The directory then needs to be referenced in the OCIO build process configuration.
-The location of the include directory is also required here, else the process will not find GLUT (is this a bug?):
-```batch
--DGLUT_ROOT="%GLUT_PATH%"
--DGLUT_INCLUDE_DIR="%GLUT_PATH%\include"
-```
-(TODO: determine how to build with static libraries.
-=> If using the static library 'freeglut_static.lib', it needs to be renamed as 'freeglut.lib' else the configuration process will not find it.
-! - Solve issue with 'freeglut_static.lib' not found, even if using 'GLUT_glut_LIBRARY')
-=> seems like should use the shared library, as have unresolved externals when using the static (+if building OCIO shared libs, expects to have 'bin' directory as well)
-????
-)
+Information on the 2 libraries can be found in ["GLEW"](components/glew) and ["GLUT"](components/glut) respectively.
 
 
 ## Third Party Libraries
@@ -270,8 +125,7 @@ For OpenColorIO 2.0.x, the minimum required versions of each library are:
 
 Except for OpenImageIO, if the libraries are not provided, the process will download the required files and build each library.
 
-! - Since OpenEXR 2.4, structural changes have been made regarding the "IlmBase" libraries, creating conflicts in OCIO when building with OpenImageIO.
-=> To avoid conflicts, the "Half" library should not be handled automatically by the process. See "Half" (TODO: link) for details.
+! - The "Half" library should not be built automatically by the process. See ["Half"](#half).
 
 To reduce building time when building the OCIO library, the third party libraries can be provided, avoiding having to build them.
 
@@ -337,46 +191,10 @@ pybind11_INCLUDE_DIR=%THIRD_PARTY_PATH%\pybind11\include
 
 ## Half
 
-When building OCIO with OpenImageIO, some errors will occur (for example when building "ocioconvert"), due to conflicts between versions of the "Half" library.
-(TODO: detail more precisely the issue - what library/version causes the exact issue)
+Since OpenEXR 2.4, structural changes have been made regarding the "IlmBase" libraries, creating conflicts in OpenColorIO when building with OpenImageIO.
 
-From the [OpenEXR/Imath 2.x to 3.x Porting Guide](https://github.com/AcademySoftwareFoundation/Imath/blob/master/docs/PortingGuide2-3.md):
-_"... with the 2.4 release (of "OpenEXR"), the "IlmBase" libraries are no longer distributed in a form that is readily separable from the rest of OpenEXR."_
-
-To fix the OpenColorIO build, the [Imath library}(https://github.com/AcademySoftwareFoundation/Imath) should be used, instead of relying on OpenEXR.
-Version [3.1.2](https://github.com/AcademySoftwareFoundation/Imath/releases/tag/v3.1.2) is used here.
-(TODO: update to 3.1.3)
-
-Additionally, the following steps are required before doing the build:
-* Modify files referring to Ilmbase module and OpenEXR headers (14 files to modify), as detailed in this [archlinux mingw patch](https://aur.archlinux.org/cgit/aur.git/tree/opencolorio-openexr3.patch?h=mingw-w64-opencolorio-git)
-  => Or look at "half_fix" directory (TODO: link).
-* If present (for example from a previous build), remove OpenEXR files from third party builds
-  * OpenEXR include directory
-  * Half library
-* Build the Imath library* and move the files to the OCIO third party directory (if not using a common directory, the "Half" location needs to be specified to the OCIO build configuration).
-  Both debug and release are built at the same time.
-  ! - Both debug+release libraries must be present when building, regardless of the build type!
-  The required files are in the following directories:
-  * bin
-  * include/Imath
-  * lib
-  * lib/cmake
-
-By doing so, the library will not be built automatically and conflicts will be avoided when using OIIO.
-
-* Building the Imath library is straightforward and doesn't require anything specific.
-(TODO: could add link/info with build script - link to OIIO? or other?)
-
-
-### Half Include Directory
-
-Using the "Imath" library instead of the "Half" library causes an issue when building the "ociodisplay" and "ociolutimages" tools.
-(TODO: other tools impacted?)
-
-In order to fix this issue, the include directory should be added to the OCIO configuration option, using the "Half_INCLUDE_DIR" option:
-```
--DHalf_INCLUDE_DIR="%THIRD_PARTY_PATH%/%ARCH%/%BUILD_TYPE%/include"
-```
+To avoid conflicts, the "Half" library should be buit separately instead of automatically by the OCIO build process.
+See ["Half"](components/half) for details.
 
 
 ## OpenImageIO
@@ -397,7 +215,8 @@ A way to solve the interdependency between the 2 libraries is to:
 
 This seems like unnecessary work, but it will ensure that both libraries are built with support for the other.
 
-Information on how to build OpenImageIO can be found in [openimageio-build-win](TODO: link!).
+Information on how to build OpenImageIO can be found in the ["openimageio-build-win"directory](https://github.com/2-REC-inwork/windows-build-openimageio).
+(TODO: CHANGE LINK WHEN NOT IN "IN-WORK" ANYMORE)
 
 Once the OIIO library has been built, the location of the include files and libraries need to be specified to the configuration process:
 ```
@@ -425,8 +244,9 @@ main.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) publ
 Changes have been done in OIIO, where some functions are now in an additional library "OpenImageIO_Util", which also needs to be linked.
 
 To fix this, changes are required in the way OCIO finds OIIO in "FindOpenImageIO.cmake".
-The changes have been done in more recent of OCIO, so the file can be obtained from a [newer version](https://github.com/AcademySoftwareFoundation/OpenColorIO/blob/master/share/cmake/modules/FindOpenImageIO.cmake) and replace the older one.
-=> Or look at "oiio-2.3_find_fix" directory (TODO: link).
+The changes have been done in more recent of OCIO, the file can be obtained from a [newer version](https://github.com/AcademySoftwareFoundation/OpenColorIO/blob/master/share/cmake/modules/FindOpenImageIO.cmake) and replace the older one.
+
+The changes can also be found in ["OIIO 2.3 Find Fix"](fixes/oiio-2.3_find_fix).
 
 
 ----
