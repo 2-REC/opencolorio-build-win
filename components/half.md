@@ -27,7 +27,7 @@ Additionally, the following steps are required before doing the build:
 
 By doing so, the library will not be built automatically and conflicts will be avoided when using OIIO.
 
-These changes can e found in ["Half Fix"](fixes/half_fix).
+These changes can e found in ["Half Fix"](../fixes/half_fix).
 
 (*) Building the Imath library is straightforward and doesn't require anything specific.
 A build script and the source for "Imath" version 3.1.2 can be found in [deps/thirdparty/imath](TODO: add link).

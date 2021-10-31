@@ -85,7 +85,7 @@ The Python bindings will not be built.
 (TODO: CHECK IF CORRECT)
 There is an issue in debug mode if the Python debug libraries are installed.
 
-More information can be found in ["Python Debug"](components/python_debug).
+More information can be found in ["Python Debug"](components/python_debug.md).
 
 
 ## GPU Rendering
@@ -103,7 +103,7 @@ No gl:
   => not compiled
 )
 
-Information on the 2 libraries can be found in ["GLEW"](components/glew) and ["GLUT"](components/glut) respectively.
+Information on the 2 libraries can be found in ["GLEW"](components/glew.md) and ["GLUT"](components/glut.md) respectively.
 
 
 ## Third Party Libraries
@@ -194,7 +194,7 @@ pybind11_INCLUDE_DIR=%THIRD_PARTY_PATH%\pybind11\include
 Since OpenEXR 2.4, structural changes have been made regarding the "IlmBase" libraries, creating conflicts in OpenColorIO when building with OpenImageIO.
 
 To avoid conflicts, the "Half" library should be buit separately instead of automatically by the OCIO build process.
-See ["Half"](components/half) for details.
+See ["Half"](components/half.md) for details.
 
 
 ## OpenImageIO
@@ -215,7 +215,7 @@ A way to solve the interdependency between the 2 libraries is to:
 
 This seems like unnecessary work, but it will ensure that both libraries are built with support for the other.
 
-Information on how to build OpenImageIO can be found in the ["openimageio-build-win"directory](https://github.com/2-REC-inwork/windows-build-openimageio).
+Information on how to build OpenImageIO can be found in the ["openimageio-build-win"](https://github.com/2-REC-inwork/windows-build-openimageio) repository.
 (TODO: CHANGE LINK WHEN NOT IN "IN-WORK" ANYMORE)
 
 Once the OIIO library has been built, the location of the include files and libraries need to be specified to the configuration process:
